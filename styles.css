@@ -1,0 +1,21 @@
+body {
+    margin:0;
+}
+
+.container {
+    display:grid;
+    width:240px;
+    height:280px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-gap:1px;
+    margin: auto;
+    padding-top:35vh;
+}   
+
+.input {
+    grid-row: 1/2;
+    grid-column: 1/5;
+    background-color: #000000;
+    color: #ffffff;
+}
