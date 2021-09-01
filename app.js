@@ -7,3 +7,7 @@ calcButton.forEach (function(button) {                    //Shows user input on 
         calcInput.append(this.innerHTML);
     });
 });
+
+clearButton.addEventListener("click", function() {   //Clear calculator display
+    calcInput.innerHTML = "";
+});
