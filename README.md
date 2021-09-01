@@ -1,0 +1,1 @@
+A simple calculator app that was created using JavaScript.
