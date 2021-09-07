@@ -10,6 +10,7 @@ let operator;
 let sum;
 let firstOperation = true;
 
+// Calculator displays '0' by default
 window.addEventListener('load', (event) => {
     calcInput.innerHTML = 0;
 });
@@ -18,14 +19,21 @@ calcButton.forEach(function (button) {
     button.addEventListener("click", function () {
         // First input check to replace '0' on calculator display
         if (firstOperation) {
-            calcInput.innerHTML = this.innerHTML;  
-            firstOperand = +calcInput.innerHTML; 
+             // If input is a decimal, append to 0 instead of replacing it
+            if (this.innerHTML == '.') {      
+                calcInput.append(this.innerHTML);
+                firstOperand = +calcInput.innerHTML;
+                firstOperation = false;
+                return;
+            }
+            calcInput.innerHTML = this.innerHTML;
+            firstOperand = +calcInput.innerHTML;
             firstOperation = false;
             return;
         }
         // Show user input on calculator display
         calcInput.append(this.innerHTML);
-        // Retrieve user inputted values 
+        // Store user inputted values 
         if (!operator) {
             firstOperand = +calcInput.innerHTML;
             return firstOperand;
