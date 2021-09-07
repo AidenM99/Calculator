@@ -17,10 +17,16 @@ window.addEventListener('load', (event) => {
 
 calcButton.forEach(function (button) {
     button.addEventListener("click", function () {
+        const previousKey = calcInput.innerHTML;
         if (firstOperation) {
             firstInputCheck(button.innerHTML);
             return;
-        }
+        };
+        // Prevents multiple decimal points
+        if (previousKey[previousKey.length-1] == '.' && button.innerHTML == '.') {
+            console.log("Decimal point already present");
+            return;
+        };
         // Show user input on calculator display
         calcInput.append(this.innerHTML);
         // Store user inputted values 
