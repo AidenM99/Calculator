@@ -1,18 +1,30 @@
 const calcButton = document.querySelectorAll(".number");
-const clearButton = document.querySelector(".clear");
 const operators = document.querySelectorAll(".operator");
 const calcInput = document.querySelector(".input");
-const equals = document.querySelector(".equals");
+const clearButton = document.querySelector('[data-key="clear"]');
+const equals = document.querySelector('[data-key="calculate"]');
 
-let operator;
 let firstOperand;
 let secondOperand;
+let operator;
 let sum;
+let firstOperation = true;
+
+window.addEventListener('load', (event) => {
+    calcInput.innerHTML = 0;
+});
 
 calcButton.forEach(function (button) {
     button.addEventListener("click", function () {
+        // First input check to replace '0' on calculator display
+        if (firstOperation) {
+            calcInput.innerHTML = this.innerHTML;  
+            firstOperand = +calcInput.innerHTML; 
+            firstOperation = false;
+            return;
+        }
         // Show user input on calculator display
-        const userInput = calcInput.append(this.innerHTML);
+        calcInput.append(this.innerHTML);
         // Retrieve user inputted values 
         if (!operator) {
             firstOperand = +calcInput.innerHTML;
@@ -36,7 +48,7 @@ const clear = clearButton.addEventListener("click", function () {
 operators.forEach(function (button) {
     button.addEventListener("click", function () {
         calcInput.innerHTML = "";
-        operator = this.id;
+        operator = this.dataset.key;
         return operator;
     });
 });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,13 +8,14 @@
     <title>Calculator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <div class="input"></div>
-        <button id="add" class="operator">+</button>
-        <button id="subtract" class="operator">-</button>
-        <button id="multiply" class="operator">*</button>
-        <button id="divide" class="operator">/</button>
+        <button class="operator" data-key="add">+</button>
+        <button class="operator" data-key="subtract">-</button>
+        <button class="operator" data-key="multiply">*</button>
+        <button class="operator" data-key="divide">÷</button>
         <button class="number">1</button>
         <button class="number">2</button>
         <button class="number ">3</button>
@@ -24,10 +26,12 @@
         <button class="number">8</button>
         <button class="number">9</button>
         <button class="number">0</button>
-        <button class="clear">AC</button>
-        <button class="equals">=</button>
+        <button data-key="decimal">.</button>
+        <button data-key="clear">AC</button>
+        <button class="equals" data-key="calculate">=</button>
     </div>
 
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>
