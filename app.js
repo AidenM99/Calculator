@@ -17,39 +17,48 @@ window.addEventListener('load', (event) => {
 
 calcButton.forEach(function (button) {
     button.addEventListener("click", function () {
-        // First input check to replace '0' on calculator display
         if (firstOperation) {
-             // If input is a decimal, append to 0 instead of replacing it
-            if (this.innerHTML == '.') {      
-                calcInput.append(this.innerHTML);
-                firstOperand = +calcInput.innerHTML;
-                firstOperation = false;
-                return;
-            }
-            calcInput.innerHTML = this.innerHTML;
-            firstOperand = +calcInput.innerHTML;
-            firstOperation = false;
+            firstInputCheck(button.innerHTML);
             return;
         }
         // Show user input on calculator display
         calcInput.append(this.innerHTML);
         // Store user inputted values 
         if (!operator) {
-            firstOperand = +calcInput.innerHTML;
+            firstOperand = parseFloat(calcInput.innerHTML);
             return firstOperand;
         } else {
-            secondOperand = +calcInput.innerHTML;
+            secondOperand = parseFloat(calcInput.innerHTML);
             return secondOperand;
         };
     });
 });
 
+// Checks the first value a user inputs
+function firstInputCheck(button) {
+    if (firstOperation) {
+        // If decimal, append to 0
+        if (button === '.') {
+            calcInput.append(button);
+            firstOperand = parseFloat(calcInput.innerHTML);
+            firstOperation = false;
+            return;
+        };
+        // If number, replace 0
+        calcInput.innerHTML = button;
+        firstOperand = parseFloat(calcInput.innerHTML);
+        firstOperation = false;
+        return;
+    };
+};
+
 // Clear calculator display and reset values
 const clear = clearButton.addEventListener("click", function () {
-    calcInput.innerHTML = "";
+    calcInput.innerHTML = 0;
     firstOperand = "";
     secondOperand = "";
     operator = "";
+    firstOperation = true;
 });
 
 // Retrieve operator
@@ -90,13 +99,13 @@ function calculate(firstOperand, secondOperand, operator) {
             break;
         default:
             console.log("Invalid Operator!");
-    }
+    };
 };
 
 // Change ValueOne to equal the sum of last input for long expressions
 function changeValue(sum) {
     return firstOperand = sum;
-}
+};
 
 
 
