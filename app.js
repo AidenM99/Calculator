@@ -1,34 +1,46 @@
-const calcButton = document.querySelectorAll(".number");
+const numbers = document.querySelectorAll(".number");
 const operators = document.querySelectorAll(".operator");
 const calcInput = document.querySelector(".input");
 const clearButton = document.querySelector('[data-key="clear"]');
 const equals = document.querySelector('[data-key="calculate"]');
 
+let firstOperation = true;
 let firstOperand;
 let secondOperand;
 let operator;
 let sum;
-let firstOperation = true;
 
 // Calculator displays '0' by default
 window.addEventListener('load', (event) => {
     calcInput.innerHTML = 0;
 });
 
-calcButton.forEach(function (button) {
+numbers.forEach(function (button) {
     button.addEventListener("click", function () {
-        const previousKey = calcInput.innerHTML;
+
+        const currentKey = button.innerHTML;
+        const previousKey = calcInput.innerHTML[calcInput.innerHTML.length - 1];
+        const display = calcInput.innerHTML;
+
         if (firstOperation) {
-            firstInputCheck(button.innerHTML);
+            firstInputCheck(currentKey);
             return;
         };
+
         // Prevents multiple decimal points
-        if (previousKey[previousKey.length-1] == '.' && button.innerHTML == '.') {
+        if (previousKey == '.' && currentKey == '.') {
             console.log("Decimal point already present");
             return;
         };
-        // Show user input on calculator display
+
+        // Prevents use of 0's in succession 
+        if (currentKey == '0' && previousKey == '0' && !display.includes('.') && display[0] == '0') {
+            console.log("Invalid operand");
+            return;
+        };
+
         calcInput.append(this.innerHTML);
+
         // Store user inputted values 
         if (!operator) {
             firstOperand = parseFloat(calcInput.innerHTML);
@@ -40,25 +52,34 @@ calcButton.forEach(function (button) {
     });
 });
 
-// Checks the first value a user inputs
+// Checks the first input
 function firstInputCheck(button) {
-    if (firstOperation) {
-        // If decimal, append to 0
-        if (button === '.') {
-            calcInput.append(button);
-            firstOperand = parseFloat(calcInput.innerHTML);
-            firstOperation = false;
-            return;
-        };
-        // If number, replace 0
-        calcInput.innerHTML = button;
-        firstOperand = parseFloat(calcInput.innerHTML);
-        firstOperation = false;
+    const reg = /[1-9]/g;
+    // If number is 0, do nothing
+    if (button === '0') {
         return;
     };
+    // If decimal, append to 0
+    if (button === '.') {
+        calcInput.append(button);
+        firstOperand = parseFloat(calcInput.innerHTML);
+    };
+    // First operand set to 0 if operator already exists
+    if (operator) {
+        calcInput.innerHTML = button;
+        firstOperand = 0;
+        secondOperand = parseFloat(calcInput.innerHTML);
+    }
+    // If number, replace 0
+    if (button.match(reg)) {
+        calcInput.innerHTML = button;
+        firstOperand = parseFloat(calcInput.innerHTML);
+    };
+    firstOperation = false;
+    return;
 };
 
-// Clear calculator display and reset values
+
 const clear = clearButton.addEventListener("click", function () {
     calcInput.innerHTML = 0;
     firstOperand = "";
@@ -68,10 +89,13 @@ const clear = clearButton.addEventListener("click", function () {
 });
 
 // Retrieve operator
-operators.forEach(function (button) {
-    button.addEventListener("click", function () {
-        calcInput.innerHTML = "";
+operators.forEach(function (sign) {
+    sign.addEventListener("click", function () {
         operator = this.dataset.key;
+        if (firstOperation) {
+            firstInputCheck(sign.innerHTML);
+        };
+        calcInput.innerHTML = "";
         return operator;
     });
 });
