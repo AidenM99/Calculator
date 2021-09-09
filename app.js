@@ -28,14 +28,8 @@ numbers.forEach(function (button) {
         };
 
         // Prevents multiple decimal points
-        if (previousKey == '.' && currentKey == '.') {
+        if (currentKey == '.' && display.includes('.')) {
             console.log("Decimal point already present");
-            return;
-        };
-
-        // Prevents use of 0's in succession 
-        if (currentKey == '0' && previousKey == '0' && !display.includes('.') && display[0] == '0') {
-            console.log("Invalid operand");
             return;
         };
 
