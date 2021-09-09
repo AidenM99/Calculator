@@ -1,6 +1,7 @@
 const numbers = document.querySelectorAll(".number");
 const operators = document.querySelectorAll(".operator");
-const calcInput = document.querySelector(".input");
+const calcInput = document.querySelector(".user-input");
+const expression = document.querySelector(".user-expression");
 const clearButton = document.querySelector('[data-key="clear"]');
 const equals = document.querySelector('[data-key="calculate"]');
 
@@ -33,13 +34,18 @@ numbers.forEach(function (button) {
             return;
         };
 
-        calcInput.append(this.innerHTML);
+        expression.append(this.innerHTML);
 
         // Store user inputted values 
         if (!operator) {
+            calcInput.append(this.innerHTML);
             firstOperand = parseFloat(calcInput.innerHTML);
             return firstOperand;
         } else {
+            if (calcInput.innerHTML == firstOperand) {
+                calcInput.innerHTML = "";
+            };
+            calcInput.append(this.innerHTML);
             secondOperand = parseFloat(calcInput.innerHTML);
             return secondOperand;
         };
@@ -60,7 +66,6 @@ function firstInputCheck(button) {
     };
     // First operand set to 0 if operator already exists
     if (operator) {
-        calcInput.innerHTML = button;
         firstOperand = 0;
         secondOperand = parseFloat(calcInput.innerHTML);
     }
@@ -69,6 +74,7 @@ function firstInputCheck(button) {
         calcInput.innerHTML = button;
         firstOperand = parseFloat(calcInput.innerHTML);
     };
+    expression.append(firstOperand);
     firstOperation = false;
     return;
 };
@@ -89,7 +95,7 @@ operators.forEach(function (sign) {
         if (firstOperation) {
             firstInputCheck(sign.innerHTML);
         };
-        calcInput.innerHTML = "";
+        expression.append(this.innerHTML);
         return operator;
     });
 });
