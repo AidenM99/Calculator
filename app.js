@@ -1,9 +1,10 @@
 const numbers = document.querySelectorAll(".number");
 const operators = document.querySelectorAll(".operator");
-const calcInput = document.querySelector(".user-input");
+const display = document.querySelector(".user-input");
 const expression = document.querySelector(".user-expression");
 const clearButton = document.querySelector('[data-key="clear"]');
 const equals = document.querySelector('[data-key="calculate"]');
+const previousOperator = [];
 
 let firstOperation = true;
 let firstOperand;
@@ -13,15 +14,13 @@ let sum;
 
 // Calculator displays '0' by default
 window.addEventListener('load', (event) => {
-    calcInput.innerHTML = 0;
+    display.textContent = 0;
 });
 
 numbers.forEach(function (button) {
     button.addEventListener("click", function () {
 
-        const currentKey = button.innerHTML;
-        const previousKey = calcInput.innerHTML[calcInput.innerHTML.length - 1];
-        const display = calcInput.innerHTML;
+        const currentKey = button.textContent;
 
         if (firstOperation) {
             firstInputCheck(currentKey);
@@ -29,24 +28,26 @@ numbers.forEach(function (button) {
         };
 
         // Prevents multiple decimal points
-        if (currentKey == '.' && display.includes('.')) {
-            console.log("Decimal point already present");
-            return;
+        if (currentKey == '.') {
+            if (display.textContent.includes('.')) {
+                console.log("Decimal point already present");
+                return;
+            } else if (display.textContent == "") {
+                display.append('0');
+            };
         };
-
-        expression.append(this.innerHTML);
 
         // Store user inputted values 
         if (!operator) {
-            calcInput.append(this.innerHTML);
-            firstOperand = parseFloat(calcInput.innerHTML);
+            display.append(this.textContent);
+            firstOperand = parseFloat(display.textContent);
             return firstOperand;
         } else {
-            if (calcInput.innerHTML == firstOperand) {
-                calcInput.innerHTML = "";
+            if (display.textContent == firstOperand) {
+                display.textContent = " ";
             };
-            calcInput.append(this.innerHTML);
-            secondOperand = parseFloat(calcInput.innerHTML);
+            display.append(this.textContent);
+            secondOperand = parseFloat(display.textContent);
             return secondOperand;
         };
     });
@@ -61,46 +62,58 @@ function firstInputCheck(button) {
     };
     // If decimal, append to 0
     if (button === '.') {
-        calcInput.append(button);
-        firstOperand = parseFloat(calcInput.innerHTML);
+        display.append(button);
+        firstOperand = parseFloat(display.textContent);
     };
     // First operand set to 0 if operator already exists
     if (operator) {
         firstOperand = 0;
-        secondOperand = parseFloat(calcInput.innerHTML);
+        secondOperand = parseFloat(display.textContent);
     }
     // If number, replace 0
     if (button.match(reg)) {
-        calcInput.innerHTML = button;
-        firstOperand = parseFloat(calcInput.innerHTML);
+        display.textContent = button;
+        firstOperand = parseFloat(display.textContent);
     };
-    expression.append(firstOperand);
     firstOperation = false;
     return;
 };
 
 
 const clear = clearButton.addEventListener("click", function () {
-    calcInput.innerHTML = 0;
-    firstOperand = "";
-    secondOperand = "";
-    operator = "";
     firstOperation = true;
+    display.textContent = 0;
+    expression.textContent = "";
+    firstOperand = undefined;
+    secondOperand = undefined;
+    operator = undefined;
+    sum = undefined;
 });
 
 // Retrieve operator
 operators.forEach(function (sign) {
     sign.addEventListener("click", function () {
+
         operator = this.dataset.key;
+        previousOperator.push(operator)
+
         if (firstOperation) {
-            firstInputCheck(sign.innerHTML);
+            firstInputCheck(sign.textContent);
         };
-        expression.append(this.innerHTML);
+
+        if (display.textContent == secondOperand) {
+            expression.textContent = "";
+            calculate(firstOperand, secondOperand, previousOperator[previousOperator.length - 2]);
+        };
+
+        expression.append(display.textContent, this.textContent);
+        display.textContent = "";
         return operator;
     });
 });
 
 equals.addEventListener("click", function () {
+    expression.append(secondOperand, '=');
     calculate(firstOperand, secondOperand, operator);
 });
 
@@ -109,22 +122,22 @@ function calculate(firstOperand, secondOperand, operator) {
     switch (operator) {
         case "add":
             sum = firstOperand + secondOperand;
-            calcInput.innerHTML = sum;
+            display.textContent = sum;
             changeValue(sum);
             break;
         case "subtract":
             sum = firstOperand - secondOperand;
-            calcInput.innerHTML = sum;
+            display.textContent = sum;
             changeValue(sum);
             break;
         case "multiply":
             sum = firstOperand * secondOperand;
-            calcInput.innerHTML = sum;
+            display.textContent = sum;
             changeValue(sum);
             break;
         case "divide":
             sum = firstOperand / secondOperand;
-            calcInput.innerHTML = sum;
+            display.textContent = sum;
             changeValue(sum);
             break;
         default:
@@ -136,12 +149,3 @@ function calculate(firstOperand, secondOperand, operator) {
 function changeValue(sum) {
     return firstOperand = sum;
 };
-
-
-
-
-
-
-
-
-
