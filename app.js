@@ -7,7 +7,7 @@ const equals = document.querySelector('[data-key="calculate"]');
 const previousOperator = [];
 
 let firstOperation = true;
-let firstOperand;
+let firstOperand = 0;
 let secondOperand;
 let operator;
 let sum;
@@ -22,9 +22,14 @@ numbers.forEach(function (button) {
 
         const currentKey = button.textContent;
 
-        if (firstOperation) {
-            firstInputCheck(currentKey);
-            return;
+        if (expression.textContent.includes('=')) {
+            clear(button);
+        };
+
+        if (display.textContent.includes('0')) {
+            if (display.textContent[0] == 0 && !display.textContent.includes('.')) {
+                display.textContent = "";
+            };
         };
 
         // Prevents multiple decimal points
@@ -34,6 +39,9 @@ numbers.forEach(function (button) {
                 return;
             } else if (display.textContent == "") {
                 display.append('0');
+            } else {
+                display.append(this.textContent);
+                return;
             };
         };
 
@@ -43,9 +51,6 @@ numbers.forEach(function (button) {
             firstOperand = parseFloat(display.textContent);
             return firstOperand;
         } else {
-            if (display.textContent == firstOperand) {
-                display.textContent = " ";
-            };
             display.append(this.textContent);
             secondOperand = parseFloat(display.textContent);
             return secondOperand;
@@ -53,52 +58,20 @@ numbers.forEach(function (button) {
     });
 });
 
-// Checks the first input
-function firstInputCheck(button) {
-    const reg = /[1-9]/g;
-    // If number is 0, do nothing
-    if (button === '0') {
-        return;
-    };
-    // If decimal, append to 0
-    if (button === '.') {
-        display.append(button);
-        firstOperand = parseFloat(display.textContent);
-    };
-    // First operand set to 0 if operator already exists
-    if (operator) {
-        firstOperand = 0;
-        secondOperand = parseFloat(display.textContent);
-    }
-    // If number, replace 0
-    if (button.match(reg)) {
-        display.textContent = button;
-        firstOperand = parseFloat(display.textContent);
-    };
-    firstOperation = false;
-    return;
-};
-
-
-const clear = clearButton.addEventListener("click", function () {
-    firstOperation = true;
-    display.textContent = 0;
-    expression.textContent = "";
-    firstOperand = undefined;
-    secondOperand = undefined;
-    operator = undefined;
-    sum = undefined;
-});
-
 // Retrieve operator
 operators.forEach(function (sign) {
     sign.addEventListener("click", function () {
 
         operator = this.dataset.key;
-        previousOperator.push(operator)
+        previousOperator.push(operator);
 
-        if (firstOperation) {
-            firstInputCheck(sign.textContent);
+         if (expression.textContent[expression.textContent.length-1] != "=") {
+            const newExpression = expression.textContent.slice(0, expression.textContent.length-1)
+            expression.textContent = newExpression;
+         };
+
+        if (expression.textContent.includes('=')) {
+            expression.textContent = "";
         };
 
         if (display.textContent == secondOperand) {
@@ -111,6 +84,7 @@ operators.forEach(function (sign) {
         return operator;
     });
 });
+
 
 equals.addEventListener("click", function () {
     expression.append(secondOperand, '=');
@@ -147,5 +121,24 @@ function calculate(firstOperand, secondOperand, operator) {
 
 // Change ValueOne to equal the sum of last input for long expressions
 function changeValue(sum) {
+    if (sum == secondOperand && expression.textContent.includes(firstOperand)) return firstOperand = 0;
     return firstOperand = sum;
+};
+
+const allClear = clearButton.addEventListener("click", function () {
+    clear();
+});
+
+const clear = (button) => {
+    expression.textContent = "";
+    firstOperand = undefined;
+    secondOperand = undefined;
+    operator = undefined;
+    sum = undefined;
+    if (button) {
+        display.textContent = "";
+        return;
+    };
+    display.textContent = 0;
+    firstOperation = true;
 };
