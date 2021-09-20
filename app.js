@@ -1,7 +1,7 @@
 const numbers = document.querySelectorAll(".number");
 const operators = document.querySelectorAll(".operator");
-const display = document.querySelector(".user-input");
-const expression = document.querySelector(".user-expression");
+const display = document.querySelector(".input");
+const expression = document.querySelector(".expression");
 const clearButton = document.querySelector('[data-key="clear"]');
 const equals = document.querySelector('[data-key="calculate"]');
 const previousOperator = [];
@@ -73,6 +73,11 @@ operators.forEach(function (sign) {
         if (expression.textContent.includes('=')) {
             expression.textContent = "";
         };
+    
+        if (display.textContent[display.textContent.length-1] == ".") {
+            const newDisplay = display.textContent.slice(0, display.textContent.length-1);
+            display.textContent = newDisplay;
+        };
 
         if (display.textContent == secondOperand) {
             expression.textContent = "";
@@ -131,7 +136,7 @@ const allClear = clearButton.addEventListener("click", function () {
 
 const clear = (button) => {
     expression.textContent = "";
-    firstOperand = undefined;
+    firstOperand = 0;
     secondOperand = undefined;
     operator = undefined;
     sum = undefined;
