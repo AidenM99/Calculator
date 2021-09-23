@@ -47,7 +47,7 @@ body {
     outline: none;
 }
 
-button:active {
+.pressed {
     background-color:rgba(0, 0 ,0 ,0.15);
 }
 
