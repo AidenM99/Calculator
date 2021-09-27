@@ -5,7 +5,7 @@ const delButton = document.querySelector(".delete");
 const clearButton = document.querySelector(".clear");
 const equals = document.querySelector(".equals");
 const display = document.querySelector(".input");
-const operators = ["+", "-", "x", "÷", "/"];
+const operators = ["+", "-", "x", "÷", "/", "*"];
 const previousOperator = [];
 
 
@@ -60,7 +60,7 @@ window.addEventListener("keydown", (e) => {
     if (e.key == "Backspace") remove();
     appendNumber(e.key);
     appendOperator(e.key);
-    buttonAnimation(e.code);
+    buttonAnimation(e.code, e.shiftKey);
 });
 
 
@@ -134,12 +134,14 @@ function appendOperator(button) {
         calculate(firstOperand, secondOperand, previousOperator[previousOperator.length - 2]);
     };
 
-    // Change keyboard divide symbol "/" to display "÷" instead
+    // Change keyboard divide and multiply symbols to display properly
     if (currentOperator == "/") {
         expression.append(display.textContent, "÷")
+    } else if (currentOperator == "*") {
+        expression.append(display.textContent, "x")
     } else {
         expression.append(display.textContent, currentOperator);
-    };
+    }
     display.textContent = "";
     return;
 };
@@ -148,6 +150,9 @@ function appendOperator(button) {
 // Checks values before evaluating expression
 function calcCheck() {
     if (secondOperand == undefined) secondOperand = firstOperand;
+
+    if (operator == "*") operator = "x";
+    if (operator == "/") operator = "÷";
 
     if (expression.textContent.includes("=")) {
         if (!expression.textContent.includes(operator)) {
@@ -158,7 +163,7 @@ function calcCheck() {
     };
 
     if (secondOperand == 0) {
-        if (operator == "÷" || "/") {
+        if (operator == "÷" || operator == "/") {
             display.textContent = "You cannot divide by 0";
             return;
         };
@@ -182,6 +187,7 @@ function calculate(firstOperand, secondOperand, operator) {
             sum = firstOperand - secondOperand;
             break;
         case "x":
+        case "*":
             sum = firstOperand * secondOperand;
             break;
         case "÷":
@@ -239,8 +245,17 @@ function remove() {
 };
 
 
-function buttonAnimation(pressedKey) {
-    const activeKey = document.querySelector("." + pressedKey);
+function buttonAnimation(pressedKey, shiftKey) {
+    let activeKey;
+
+    if (shiftKey == true && pressedKey == "Digit8") {
+        activeKey = document.querySelector("." + "multiply");
+    };
+    if (shiftKey == false && pressedKey == "Equal") {
+        return;
+    } else {
+        activeKey = document.querySelector("." + pressedKey);
+    };
 
     if (!activeKey) return;
 
