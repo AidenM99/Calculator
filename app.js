@@ -1,32 +1,60 @@
-const numberButtons = document.querySelectorAll(".number");
 const operatorButtons = document.querySelectorAll(".operator");
-const display = document.querySelector(".input");
+const numberButtons = document.querySelectorAll(".number");
 const expression = document.querySelector(".expression");
-const clearButton = document.querySelector('[data-key="clear"]');
-const delButton = document.querySelector('[data-key="delete"]');
-const equals = document.querySelector('[data-key="calculate"]');
+const delButton = document.querySelector(".delete");
+const clearButton = document.querySelector(".clear");
+const equals = document.querySelector(".equals");
+const display = document.querySelector(".input");
+const operators = ["+", "-", "x", "÷", "/"];
 const previousOperator = [];
-const operators = ["+", "-", "x", "÷"];
+
 
 let firstOperand = 0;
 let secondOperand;
 let operator;
 let sum;
 
-window.addEventListener('load', (event) => {
+
+window.addEventListener('load', () => {
     display.textContent = 0;
 });
 
-// Click event
-numberButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        appendNumber(this.textContent);
-        buttonAnimation(this.classList[1]);
+
+numberButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+        appendNumber(e.target.textContent);
+        buttonAnimation(e.target.classList[1]);
     });
 });
 
-// Keydown event
-window.addEventListener("keydown", function (e) {
+
+operatorButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+        appendOperator(e.target.textContent);
+        buttonAnimation(e.target.classList[1]);
+    });
+});
+
+
+equals.addEventListener("click", (e) => {
+    calcCheck();
+    buttonAnimation(e.target.classList[1]);
+});
+
+
+clearButton.addEventListener("click", (e) => {
+    clear();
+    buttonAnimation(e.target.classList[1]);
+});
+
+
+delButton.addEventListener("click", (e) => {
+    remove();
+    buttonAnimation(e.target.classList[1]);
+});
+
+
+window.addEventListener("keydown", (e) => {
     if (e.key == "Enter") calcCheck();
     if (e.key == "Delete") clear();
     if (e.key == "Backspace") remove();
@@ -35,23 +63,21 @@ window.addEventListener("keydown", function (e) {
     buttonAnimation(e.code);
 });
 
-function appendNumber(button) {
 
+function appendNumber(button) {
     const currentKey = button;
 
     if (isNaN(currentKey) && currentKey != ".") return;
 
-    if (expression.textContent.includes('=')) {
-        clear(button);
-    };
+    if (display.textContent.includes("You")) clear();
+
+    if (expression.textContent.includes('=')) clear(button);
 
     // Replace default '0' with number
     if (display.textContent[0] == 0 && !display.textContent.includes('.')) {
         display.textContent = "";
     };
 
-
-    // Prevents multiple decimal points
     if (currentKey == '.') {
         if (display.textContent.includes('.')) {
             console.log("Decimal point already present");
@@ -66,11 +92,11 @@ function appendNumber(button) {
 
     display.append(currentKey);
 
-    updateValue(currentKey);
+    updateValue();
 };
 
 // Store value shown on calc display
-const updateValue = (value) => {
+function updateValue() {
     if (!operator) {
         firstOperand = parseFloat(display.textContent);
         return firstOperand;
@@ -80,17 +106,11 @@ const updateValue = (value) => {
     };
 };
 
-// Retrieve operator
-operatorButtons.forEach(function (button) {
-    button.addEventListener("click", function () {
-        appendOperator(this.textContent);
-        buttonAnimation(this.classList[1]);
-    });
-});
 
 function appendOperator(button) {
-
     if (!operators.includes(button)) return;
+
+    if (display.textContent.includes("You")) clear();
 
     const currentOperator = button;
     operator = currentOperator;
@@ -98,7 +118,7 @@ function appendOperator(button) {
 
     // Replaces current operator on display if clicked in succession
     if (expression.textContent[expression.textContent.length - 1] != "=") {
-        const newExpression = expression.textContent.slice(0, expression.textContent.length - 1)
+        const newExpression = expression.textContent.slice(0, expression.textContent.length - 1);
         expression.textContent = newExpression;
     };
 
@@ -106,62 +126,74 @@ function appendOperator(button) {
         expression.textContent = "";
     };
 
-    // Remove decimal point if last operation when operator is clicked
-    if (display.textContent[display.textContent.length - 1] == ".") {
-        remove();
-    };
+    if (display.textContent[display.textContent.length - 1] == ".") remove();
 
+    // Call calculate function if operator is clicked with first and second operand present
     if (display.textContent == secondOperand) {
         expression.textContent = "";
         calculate(firstOperand, secondOperand, previousOperator[previousOperator.length - 2]);
     };
 
-    expression.append(display.textContent, currentOperator);
+    // Change keyboard divide symbol "/" to display "÷" instead
+    if (currentOperator == "/") {
+        expression.append(display.textContent, "÷")
+    } else {
+        expression.append(display.textContent, currentOperator);
+    };
     display.textContent = "";
     return;
 };
 
-equals.addEventListener("click", function () {
-    buttonAnimation(this.classList[1]);
-    calcCheck();
-});
 
 // Checks values before evaluating expression
 function calcCheck() {
     if (secondOperand == undefined) secondOperand = firstOperand;
+
+    if (expression.textContent.includes("=")) {
+        if (!expression.textContent.includes(operator)) {
+            return;
+        } else {
+            expression.textContent = sum + operator + secondOperand + "=";
+        };
+    };
+
+    if (secondOperand == "0" && operator == "÷" || operator == "/") {
+        display.textContent = "You cannot divide by 0"
+        return;
+    };
+
     if (expression.textContent.includes("=")) {
     } else {
         expression.append(secondOperand, '=');
     };
+
     calculate(firstOperand, secondOperand, operator);
 };
+
 
 function calculate(firstOperand, secondOperand, operator) {
     switch (operator) {
         case "+":
             sum = firstOperand + secondOperand;
-            display.textContent = sum;
-            changeValue(sum);
             break;
         case "-":
             sum = firstOperand - secondOperand;
-            display.textContent = sum;
-            changeValue(sum);
             break;
         case "x":
             sum = firstOperand * secondOperand;
-            display.textContent = sum;
-            changeValue(sum);
             break;
         case "÷":
+        case "/":
             sum = firstOperand / secondOperand;
-            display.textContent = sum;
-            changeValue(sum);
             break;
         default:
-            console.log("Invalid Operator!");
+            sum = firstOperand;
     };
+    sum = Number((sum).toFixed(3));
+    display.textContent = sum;
+    changeValue(sum);
 };
+
 
 // Change firstOperand to equal the sum of last input for long expressions
 function changeValue(sum) {
@@ -169,12 +201,8 @@ function changeValue(sum) {
     return firstOperand = sum;
 };
 
-const allClear = clearButton.addEventListener("click", function () {
-    clear();
-    buttonAnimation(this.classList[1]);
-});
 
-const clear = (button) => {
+function clear(button) {
     expression.textContent = "";
     firstOperand = 0;
     secondOperand = undefined;
@@ -189,12 +217,8 @@ const clear = (button) => {
     display.textContent = 0;
 };
 
-const del = delButton.addEventListener("click", function () {
-    remove();
-    buttonAnimation(this.classList[1]);
-});
 
-const remove = () => {
+function remove() {
     const newDisplay = display.textContent.slice(0, display.textContent.length - 1);
 
     if (expression.textContent.includes('=')) {
@@ -209,12 +233,11 @@ const remove = () => {
         display.textContent = 0;
     };
 
-    updateValue(newDisplay);
+    updateValue();
 };
 
+
 function buttonAnimation(pressedKey) {
-
-
     const activeKey = document.querySelector("." + pressedKey);
 
     activeKey.classList.add("pressed");
@@ -223,4 +246,3 @@ function buttonAnimation(pressedKey) {
         activeKey.classList.remove("pressed");
     }, 100);
 };
-
