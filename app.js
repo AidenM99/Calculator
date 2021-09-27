@@ -157,9 +157,11 @@ function calcCheck() {
         };
     };
 
-    if (secondOperand == "0" && operator == "÷" || operator == "/") {
-        display.textContent = "You cannot divide by 0"
-        return;
+    if (secondOperand == 0) {
+        if (operator == "÷" || "/") {
+            display.textContent = "You cannot divide by 0";
+            return;
+        };
     };
 
     if (expression.textContent.includes("=")) {
@@ -239,6 +241,8 @@ function remove() {
 
 function buttonAnimation(pressedKey) {
     const activeKey = document.querySelector("." + pressedKey);
+
+    if (!activeKey) return;
 
     activeKey.classList.add("pressed");
 
