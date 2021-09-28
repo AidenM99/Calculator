@@ -55,7 +55,7 @@ delButton.addEventListener("click", (e) => {
 
 
 window.addEventListener("keydown", (e) => {
-    if (e.key == "Enter") calcCheck();
+    if (e.key == "Enter" || e.key == "=") calcCheck();
     if (e.key == "Delete") clear();
     if (e.key == "Backspace") remove();
     appendNumber(e.key);
@@ -67,9 +67,11 @@ window.addEventListener("keydown", (e) => {
 function appendNumber(button) {
     const currentKey = button;
 
-    if (isNaN(currentKey) && currentKey != ".") return;
-
+    // If divide by 0 error message is currently displaying on screen
+    if (display.textContent.length > 14 && !display.textContent.includes("You")) return;
     if (display.textContent.includes("You")) clear();
+
+    if (isNaN(currentKey) && currentKey != ".") return;
 
     if (expression.textContent.includes('=')) clear(button);
 
@@ -110,6 +112,7 @@ function updateValue() {
 function appendOperator(button) {
     if (!operators.includes(button)) return;
 
+    // If divide by 0 error message is currently displaying on screen
     if (display.textContent.includes("You")) clear();
 
     const currentOperator = button;
@@ -134,11 +137,13 @@ function appendOperator(button) {
         calculate(firstOperand, secondOperand, previousOperator[previousOperator.length - 2]);
     };
 
-    // Change keyboard divide and multiply symbols to display properly
+    // Change keyboard divide and multiply inputs to display properly
     if (currentOperator == "/") {
-        expression.append(display.textContent, "÷")
+        expression.append(display.textContent, "÷");
+        operator = "÷";
     } else if (currentOperator == "*") {
-        expression.append(display.textContent, "x")
+        expression.append(display.textContent, "x");
+        operator = "x";
     } else {
         expression.append(display.textContent, currentOperator);
     }
@@ -151,19 +156,16 @@ function appendOperator(button) {
 function calcCheck() {
     if (secondOperand == undefined) secondOperand = firstOperand;
 
-    if (operator == "*") operator = "x";
-    if (operator == "/") operator = "÷";
-
     if (expression.textContent.includes("=")) {
         if (!expression.textContent.includes(operator)) {
             return;
         } else {
-            expression.textContent = sum + operator + secondOperand + "=";
+            expression.textContent = sum + operator + secondOperand + "=";     // If equals is pressed continuously
         };
     };
 
     if (secondOperand == 0) {
-        if (operator == "÷" || operator == "/") {
+        if (operator == "÷") {
             display.textContent = "You cannot divide by 0";
             return;
         };
@@ -187,11 +189,9 @@ function calculate(firstOperand, secondOperand, operator) {
             sum = firstOperand - secondOperand;
             break;
         case "x":
-        case "*":
             sum = firstOperand * secondOperand;
             break;
         case "÷":
-        case "/":
             sum = firstOperand / secondOperand;
             break;
         default:
@@ -248,11 +248,11 @@ function remove() {
 function buttonAnimation(pressedKey, shiftKey) {
     let activeKey;
 
+    // Detect if shift key is pressed to animate correct button
     if (shiftKey == true && pressedKey == "Digit8") {
         activeKey = document.querySelector("." + "multiply");
-    };
-    if (shiftKey == false && pressedKey == "Equal") {
-        return;
+    } else if (shiftKey == false && pressedKey == "Equal") {
+        activeKey = document.querySelector("." + "equals")
     } else {
         activeKey = document.querySelector("." + pressedKey);
     };
@@ -261,7 +261,7 @@ function buttonAnimation(pressedKey, shiftKey) {
 
     activeKey.classList.add("pressed");
 
-    setTimeout(function () {
+    setTimeout(() => {
         activeKey.classList.remove("pressed");
     }, 100);
 };
