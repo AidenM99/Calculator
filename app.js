@@ -61,6 +61,7 @@ window.addEventListener("keydown", (e) => {
     appendNumber(e.key);
     appendOperator(e.key);
     buttonAnimation(e.code, e.shiftKey);
+    e.target.blur();
 });
 
 
